@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Leaflet 팝업 내 버튼으로 다른 팝업 띄우기</title>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    #map {
+      height: 100vh;
+      width: 100%;
+    }
+
+    .popup-card button {
+      background-color: #7e00cc;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    .popup-card button:hover {
+      background-color: #5b00a1;
+    }
+
+    .transparent-marker {
+        opacity: 0.01    ;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <script>
+    const map = L.map("map").setView([37.2455, 127.0809], 15.5);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: "© OpenStreetMap contributors",
+    }).addTo(map);
+
+    // 첫 번째 팝업
+    const popup1 = `
+      <div class="popup-card">
+        <h4>공과대학</h4>
+        <p>여기서 버튼을 누르면 다른 팝업이 뜹니다.</p>
+        <button id="openSecondPopup">다른 팝업 보기</button>
+      </div>
+    `;
+
+    const marker1 = L.marker([37.24615691029263, 127.08084065835392])
+      .addTo(map)
+      .bindPopup(popup1, { maxWidth: 250 });
+
+    // 두 번째 팝업 내용
+    const popup2 = `
+      <div class="popup-card">
+        <h4>두 번째 팝업</h4>
+        <p>이건 버튼 클릭으로 열린 새로운 팝업입니다.</p>
+      </div>
+    `;
+
+    const transparentIcon = L.icon({
+      iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png', // 기본 마커 이미지
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+      shadowSize: [41, 41],
+      className: 'transparent-marker' // CSS 클래스 적용
+    });
+
+    const marker2 = L.marker([37.2465, 127.0815], { icon: transparentIcon })
+      .addTo(map)
+      .bindPopup(popup2, { maxWidth: 250 });
+
+    // 🔹 팝업이 열릴 때마다 버튼 이벤트를 새로 등록해야 함
+    map.on("popupopen", (e) => {
+      const button = document.getElementById("openSecondPopup");
+      if (button) {
+        button.addEventListener("click", () => {
+          marker2.openPopup(); // 두 번째 팝업 열기
+        });
+      }
+    });
+  </script>
+</body>
+</html>
