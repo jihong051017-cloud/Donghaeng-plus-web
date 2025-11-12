@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>경희대학교 국제캠퍼스 지도</title>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    #map {
+      height: 100vh;
+      width: 100%;
+    }
+
+    /* 팝업 여백 */
+    .leaflet-popup-content {
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+
+    /* 팝업 컨테이너 */
+    .popup-container {
+      padding: 10px;
+      margin: 5px 0;
+      background-color: #fff;
+      border-radius: 10px;
+    }
+
+    /* 카드 스타일 */
+    .popup-card {
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+    }
+
+    .popup-card img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      margin: 15px;
+      border-radius: 8px;
+    }
+
+    .popup-card-content {
+      padding: 10px 10px 10px 0;
+    }
+
+    .popup-card-content h4 {
+      margin: 4px 0;
+      font-size: 18px;
+      color: #333;
+    }
+
+    .popup-card-content p {
+      font-size: 12px;
+      color: #666;
+      margin: 4px 0;
+    }
+
+    a.popup-link {
+      color: #0077cc;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    a.popup-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <script>
+    // 지도 초기 설정
+    const map = L.map("map").setView([37.2455, 127.0809], 15.5);
+
+    // OpenStreetMap 배경
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: "© OpenStreetMap contributors",
+    }).addTo(map);
+
+    // 단과대 데이터
+    const locations = [
+      {
+        name: "공과대학",
+        coords: [37.24615691029263, 127.08084065835392],
+        desc: "기계, 전자, 컴퓨터공학 등 공학 계열 전공이 위치합니다.",
+        link: "https://eng.khu.ac.kr/",
+        img: "./images/KakaoTalk_20251029_152606104_06.png"
+      },
+      {
+        name: "국제대학",
+        coords: [37.23990782929709, 127.0813270460393],
+        desc: "국제학, 국제경영 등 글로벌 전공 중심 단과대학입니다.",
+        link: "https://gip.khu.ac.kr/",
+        img: "https://postfiles.pstatic.net/MjAyNTExMTFfMjA5/MDAxNzYyODYxODUzNjA0.k3_3gdydilC_1xt8V5qncEtBgORwiUeZKvdLSP9sjvwg.DBW1P5zXbzTDcK0so0cdJjJLKKRf4sTa7Nlu4Ll5Tngg.PNG/toilet.png?type=w966"
+      },
+      {
+        name: "응용과학대학",
+        coords: [37.239726154237346, 127.08343433302781],
+        desc: "식품영양, 환경학, 응용물리 등 자연과학 계열 학과들이 있습니다.",
+        link: "https://appliedscience.khu.ac.kr/",
+        img: "https://postfiles.pstatic.net/MjAyNTExMTFfNzgg/MDAxNzYyODYxMjc2NTEz.9GZPqo0QpzyBn4mLpuRVsF7tPcq7qv2uz6N68YHQujgg.M1VYAvnlfV62YSOzxg3WgzUD0KvqTkgn-wGTkDLhcb4g.PNG/lift-sign.png?type=w966"
+      },
+      {
+        name: "체육대학",
+        coords: [37.244368520122684, 127.08057107017227],
+        desc: "체육교육, 스포츠의학, 골프산업학 등이 개설된 단과대학입니다.",
+        link: "https://sports.khu.ac.kr/",
+        img: "https://postfiles.pstatic.net/MjAyNTExMTFfMjA5/MDAxNzYyODYxODUzNjA0.k3_3gdydilC_1xt8V5qncEtBgORwiUeZKvdLSP9sjvwg.DBW1P5zXbzTDcK0so0cdJjJLKKRf4sTa7Nlu4Ll5Tngg.PNG/toilet.png?type=w966"
+      },
+      {
+        name: "예술디자인대학",
+        coords: [37.24186089520857, 127.08447355145206],
+        desc: "시각디자인, 산업디자인, 패션 등 예술계열 전공이 있습니다.",
+        link: "https://artdesign.khu.ac.kr/",
+        img: "https://postfiles.pstatic.net/MjAyNTExMTFfNzgg/MDAxNzYyODYxMjc2NTEz.9GZPqo0QpzyBn4mLpuRVsF7tPcq7qv2uz6N68YHQujgg.M1VYAvnlfV62YSOzxg3WgzUD0KvqTkgn-wGTkDLhcb4g.PNG/lift-sign.png?type=w966"
+      },
+      {
+        name: "외국어대학",
+        coords: [37.245208263779745, 127.07792333209701],
+        desc: "영어, 중국어, 일본어, 프랑스어 등 외국어 전공이 모여 있습니다.",
+        link: "https://foreign.khu.ac.kr/",
+        img: "https://postfiles.pstatic.net/MjAyNTExMTFfMjA5/MDAxNzYyODYxODUzNjA0.k3_3gdydilC_1xt8V5qncEtBgORwiUeZKvdLSP9sjvwg.DBW1P5zXbzTDcK0so0cdJjJLKKRf4sTa7Nlu4Ll5Tngg.PNG/toilet.png?type=w966"
+      },
+      {
+        name: "중앙도서관",
+        coords: [37.24088203083561, 127.07975027446633],
+        desc: "국제캠퍼스의 중심 도서관으로 방대한 자료를 보유하고 있습니다.",
+        link: "https://lib.khu.ac.kr/",
+        img: "https://postfiles.pstatic.net/MjAyNTExMTFfMjA5/MDAxNzYyODYxODUzNjA0.k3_3gdydilC_1xt8V5qncEtBgORwiUeZKvdLSP9sjvwg.DBW1P5zXbzTDcK0so0cdJjJLKKRf4sTa7Nlu4Ll5Tngg.PNG/toilet.png?type=w966"
+      },
+      {
+        name: "제2기숙사 A동",
+        coords: [37.24367727218569, 127.07672144260087],
+        desc: "학생 기숙사 A동 (여학생 기숙사)",
+        link: "https://www.khu.ac.kr/kor/campuslife/dormitory.do",
+        img: "https://postfiles.pstatic.net/MjAyNTExMTFfMjA5/MDAxNzYyODYxODUzNjA0.k3_3gdydilC_1xt8V5qncEtBgORwiUeZKvdLSP9sjvwg.DBW1P5zXbzTDcK0so0cdJjJLKKRf4sTa7Nlu4Ll5Tngg.PNG/toilet.png?type=w966"
+      },
+      {
+        name: "제2기숙사 B동",
+        coords: [37.242694833365654, 127.07718253318049],
+        desc: "학생 기숙사 B동 (남학생 기숙사)",
+        link: "https://www.khu.ac.kr/kor/campuslife/dormitory.do",
+        img: "https://postfiles.pstatic.net/MjAyNTExMTFfMjA5/MDAxNzYyODYxODUzNjA0.k3_3gdydilC_1xt8V5qncEtBgORwiUeZKvdLSP9sjvwg.DBW1P5zXbzTDcK0so0cdJjJLKKRf4sTa7Nlu4Ll5Tngg.PNG/toilet.png?type=w966"
+      },
+      {
+        name: "우정원",
+        coords: [37.24598374799652, 127.07702809477692],
+        desc: "경희대 상징적인 건문 중 하나로 다양한 행사와 모임이 열립니다",
+        link: "https://www.khu.ac.kr/kor/campuslife/dormitory.do",
+        img: "https://postfiles.pstatic.net/MjAyNTExMTFfMjA5/MDAxNzYyODYxODUzNjA0.k3_3gdydilC_1xt8V5qncEtBgORwiUeZKvdLSP9sjvwg.DBW1P5zXbzTDcK0so0cdJjJLKKRf4sTa7Nlu4Ll5Tngg.PNG/toilet.png?type=w966"
+      },
+      {
+        name: "선승관",
+        coords: [37.24275594698641, 127.08013262519754],
+        desc: "체육관",
+        link: "https://ice.khu.ac.kr/",
+        img: "https://postfiles.pstatic.net/MjAyNTExMTFfMjA5/MDAxNzYyODYxODUzNjA0.k3_3gdydilC_1xt8V5qncEtBgORwiUeZKvdLSP9sjvwg.DBW1P5zXbzTDcK0so0cdJjJLKKRf4sTa7Nlu4Ll5Tngg.PNG/toilet.png?type=w966"
+      },
+      {
+        name: "생명과학대학",
+        coords: [37.242926524172276, 127.08104571100777],
+        desc: "생명과학대학",
+        link: "https://ice.khu.ac.kr/",
+        img: "https://postfiles.pstatic.net/MjAyNTExMTFfMjA5/MDAxNzYyODYxODUzNjA0.k3_3gdydilC_1xt8V5qncEtBgORwiUeZKvdLSP9sjvwg.DBW1P5zXbzTDcK0so0cdJjJLKKRf4sTa7Nlu4Ll5Tngg.PNG/toilet.png?type=w966"
+      },
+      {
+        name: "학생회관",
+        coords: [37.24205319318819, 127.0800417187643],
+        desc: "생명과학대학",
+        link: "https://ice.khu.ac.kr/",
+        img: "https://postfiles.pstatic.net/MjAyNTExMTFfMjA5/MDAxNzYyODYxODUzNjA0.k3_3gdydilC_1xt8V5qncEtBgORwiUeZKvdLSP9sjvwg.DBW1P5zXbzTDcK0so0cdJjJLKKRf4sTa7Nlu4Ll5Tngg.PNG/toilet.png?type=w966"
+      }
+
+    ];
+
+    // 각 마커에 카드 2개씩 팝업 생성
+   // 각 마커에 카드 2개씩 팝업 생성
+   locations.forEach((loc) => {
+     const popupHTML = `
+       <div class="popup-container">
+         <div class="popup-card">
+           <img src="https://postfiles.pstatic.net/MjAyNTExMTFfMjA5/MDAxNzYyODYxODUzNjA0.k3_3gdydilC_1xt8V5qncEtBgORwiUeZKvdLSP9sjvwg.DBW1P5zXbzTDcK0so0cdJjJLKKRf4sTa7Nlu4Ll5Tngg.PNG/toilet.png?type=w966" alt="화장실">
+           <div class="popup-card-content">
+             <h4>화장실</h4>
+             <p>${loc.name} 근처 화장실은 1층과 지하에 위치해 있어요.</p>
+             <p><a href="${loc.link}" target="_blank" class="popup-link">위치 보기</a></p>
+           </div>
+         </div>
+
+         <div class="popup-card">
+           <img src="https://postfiles.pstatic.net/MjAyNTExMTFfNzgg/MDAxNzYyODYxMjc2NTEz.9GZPqo0QpzyBn4mLpuRVsF7tPcq7qv2uz6N68YHQujgg.M1VYAvnlfV62YSOzxg3WgzUD0KvqTkgn-wGTkDLhcb4g.PNG/lift-sign.png?type=w966" alt="엘리베이터">
+           <div class="popup-card-content">
+             <h4>엘리베이터</h4>
+             <p>${loc.name} 건물 내부에 엘리베이터가 설치되어 있으며 장애인 이용이 가능합니다.</p>
+             <p><a href="${loc.link}" target="_blank" class="popup-link">위치 보기</a></p>
+           </div>
+         </div>
+       </div>
+  `   ;
+
+     L.marker(loc.coords)
+       .addTo(map)
+       .bindPopup(popupHTML, { maxWidth: 270 });
+   });
+
+
+    // 🛣️ 도로 예시 (빨간색)
+    const mainRoad = [
+ 		[37.24741553530494, 127.07835954232603], // 정문 근처
+		[37.24621707781857, 127.07846255747269],
+		[37.245487179800726, 127.07854069646467],
+ 		[37.24477528007473, 127.0786526647892], //외대 앞
+ 		[37.24449564852381, 127.07911447160271 ], // 체대 앞
+		[37.24371166459195, 127.07922635762455], //차단기
+  		[37.2436206475767, 127.08057872693661], // 선승관과 생대 사이
+  		[37.242521311936585, 127.08066771957772], // 학생회관이 보이는
+		[37.2424709288108, 127.08187077754887], //국제경영대학관지나서
+		[37.24138045405968, 127.08217389358273],//사색
+		[37.24027220025517, 127.08212761031747],//사색2
+		[37.240257190213754, 127.08425481354452 ],//차고지쪽
+		[37.239923839693525, 127.08420372756355 ], 
+		[37.23913341866843, 127.08385629983978 ],//노천가는길 		
+	];
+	const secondRoad = [
+		[37.24475727790134,127.07862446931195],//운동장 삥도는 도로
+		[37.24461326773131,127.07838763529833],
+		[37.24474866999507,127.07801584222906],
+		[37.24470400245184,127.07742971980102],
+		[37.24446994419766,127.07710263106415],
+		[37.24432584310481,127.07700104847301],
+		[37.244244763767405,127.07697842472136],
+		[37.24328959801258,127.07706761717219],
+		[37.24293802901586,127.07731520880652],
+		[37.24285677286024,127.0775630751468],
+		[37.24292843390773,127.07820556339334],
+		[37.24308132786225,127.07863399877603],
+		[37.24372068634545,127.07920946123848],
+		[37.2443469611528,127.0791368574706],
+		[37.24453175802122,127.07901307328308],
+		[37.24468505573532,127.07883290217471],
+		[37.244531735455524,127.07904688528137],
+		[37.24475725170308,127.07866391676122]
+		
+	];
+
+	const greenSection = [
+		[37.24741553530494, 127.07835954232603], // 정문 근처
+		[37.24621707781857, 127.07846255747269],
+		[37.245487179800726, 127.07854069646467],
+ 		[37.24477528007473, 127.0786526647892]
+	
+	];
+	const greenSection2 = [
+		[37.24138045405968, 127.08217389358273],//사색
+		[37.24027220025517, 127.08212761031747],//사색2
+		[37.240257190213754, 127.08425481354452 ]//차고지쪽
+	];
+
+	const engineeringRoad = [
+		[37.247032522616436,127.07846340291763],//공대
+		[37.24706313622395,127.07984413839733],
+		[37.24701803460838,127.07991735259964],
+		[37.24556731953758,127.07996653939304],
+		[37.24550880872436,127.0798819464242],
+		[37.245473667876105,127.07853504703523]
+	];
+	const engineeringRoad2 = [
+		[37.246743193392454,127.0799508753727],
+		[37.24663025381996,127.08040723100606],
+		[37.24653554462247,127.08055365301892],
+		[37.24609852679182,127.08057009421762],
+		[37.2459770466559,127.080333276218],
+		[37.245855649838056,127.07997247948543]
+	];
+
+	const peRoad = [
+		[37.24453172416905,127.07906379128052],
+		[37.24471161980452,127.07953171328899],
+		[37.244702507073626,127.07968385815403],
+		[37.24463487184381,127.07976831711393],
+		[37.243968049689975,127.07984087315491],
+		[37.24385995095664,127.0798013121139],
+		[37.24383755381063,127.07960968880012],
+		[37.243846817480524,127.07923213438447]
+	];
+
+	const libraryRoad = [
+		[37.241371453387615,127.08215979605754],
+		[37.241445495997475,127.07928597178811],
+		[37.24133298599689,127.0791055307758],
+		[37.24060767501825,127.07905969242327],
+		[37.24039581648693,127.07922852202098],
+		[37.240296554311044,127.07944818397105],
+		[37.2402510312239,127.08014687845406],
+		[37.240314024219714,127.08026528063218],
+		[37.24027670743343,127.08212479769755]
+	];
+
+	const designRoad = [
+		[37.24139397168516,127.0821710907061],
+		[37.24132858557108,127.08543937674499]
+	];
+
+
+
+
+// 빨간색 도로 라인 추가
+	L.polyline(mainRoad, {
+  		color: "red",
+  		weight: 5,
+  		opacity: 0.8,
+  		smoothFactor: 1
+	}).addTo(map);
+
+	L.polyline(engineeringRoad, {
+  		color: "red",
+  		weight: 5,
+  		opacity: 0.8,
+  		smoothFactor: 1
+	}).addTo(map);
+
+	L.polyline(engineeringRoad2, {
+  		color: "red",
+  		weight: 5,
+  		opacity: 0.8,
+  		smoothFactor: 1
+	}).addTo(map);
+
+	L.polyline(peRoad, {
+  		color: "red",
+  		weight: 5,
+  		opacity: 0.8,
+  		smoothFactor: 1
+	}).addTo(map);
+	
+//초록색 도로
+	L.polyline(greenSection, {
+		color : "#7CFF59" ,
+		weight : 6,
+		opacity : 0.8,
+		smoothFactor:1
+	}).addTo(map);
+
+	L.polyline(greenSection2, {
+		color : "#7CFF59" ,
+		weight : 6,
+		opacity : 0.8,
+		smoothFactor:1
+	}).addTo(map);
+
+	L.polyline(secondRoad, {
+		color : "#7CFF59" ,
+		weight : 6,
+		opacity : 0.8,
+		smoothFactor:1
+	}).addTo(map);
+
+	L.polyline(libraryRoad, {
+		color : "#7CFF59" ,
+		weight : 6,
+		opacity : 0.8,
+		smoothFactor:1
+	}).addTo(map);
+
+	L.polyline(designRoad, {
+		color : "#7CFF59" ,
+		weight : 6,
+		opacity : 0.8,
+		smoothFactor:1
+	}).addTo(map);
+
+
+
+  </script>
+</body>
+</html>
