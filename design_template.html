@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Leaflet 팝업 여러 카드 예시</title>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    #map {
+      height: 100vh;
+      width: 100%;
+    }
+    .leaflet-popup-content {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+    .popup-container {
+  padding: 10px;     /* 내부 여백: 카드들이 컨테이너 안에서 떨어지게 */
+  margin: 5px 0;     /* 외부 여백: 팝업 상하 여백 */
+  background-color: #fff;  /* (선택) 팝업 컨테이너 배경 */
+  border-radius: 10px;     /* (선택) 둥근 모서리 */
+}
+
+
+    .popup-card {
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+    .popup-card img {
+      width: 20%;
+      height: auto;
+      display: block;
+      margin-top: 25px;
+      margin-left: 25px;
+      border-radius: 6px;
+    }
+    .popup-card-content {
+      padding: 10px 20px;
+    }
+    .popup-card-content h4 {
+      margin: 4px 0;
+      font-size: 20px;
+      color: #333;
+    }
+    .popup-card-content p {
+      font-size: 12px;
+      color: #666;
+      margin: 10;
+    }
+    a.popup-link {
+      color: #0077cc;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    a.popup-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <script>
+    const map = L.map("map").setView([37.2455, 127.0809], 15.5);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: "© OpenStreetMap contributors",
+    }).addTo(map);
+
+    const popupHTML = `
+        <div class="popup-card">
+        <img src="https://postfiles.pstatic.net/MjAyNTExMTFfNzgg/MDAxNzYyODYxMjc2NTEz.9GZPqo0QpzyBn4mLpuRVsF7tPcq7qv2uz6N68YHQujgg.M1VYAvnlfV62YSOzxg3WgzUD0KvqTkgn-wGTkDLhcb4g.PNG/lift-sign.png?type=w966" alt="엘리베이터">
+        <div class="popup-card-content">
+          <h4>엘리베이터</h4>
+          <p>공과대학 내 엘리베이터는 '__'에 위치해 있어요</p>
+          <p><a href="https://eng.khu.ac.kr/" target="_blank">위치 확인</a><p>
+        </div>
+      </div>
+
+      <div class="popup-card">
+        <img src="https://postfiles.pstatic.net/MjAyNTExMTFfMjA5/MDAxNzYyODYxODUzNjA0.k3_3gdydilC_1xt8V5qncEtBgORwiUeZKvdLSP9sjvwg.DBW1P5zXbzTDcK0so0cdJjJLKKRf4sTa7Nlu4Ll5Tngg.PNG/toilet.png?type=w966" alt="화장실">
+        <div class="popup-card-content">
+          <h4>장애인 화장실</h4>
+          <p>공과대학 내 장애인 화장실은 '__'에 위치해 있어요</p>
+          <p><a href="https://eng.khu.ac.kr/" target="_blank">위치 확인</a><p>
+        </div>
+      </div>
+    `;
+
+    L.marker([37.24615691029263, 127.08084065835392])
+      .addTo(map)
+      .bindPopup(popupHTML, { maxWidth: 250 });
+  </script>
+</body>
+</html>
