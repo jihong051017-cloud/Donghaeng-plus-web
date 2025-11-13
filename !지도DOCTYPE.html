@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>경희대학교 국제캠퍼스 지도</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    #map { height: 100vh; width: 100%; }
+    .leaflet-popup-content { padding: 10px; font-size: 14px; }
+    .popup-card {
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+      margin-bottom: 8px;
+    }
+    .popup-card img {
+      width: 100%;
+      height: 100px;
+      object-fit: cover;
+    }
+    .popup-card-content {
+      padding: 8px;
+    }
+    .popup-card-content h4 {
+      margin: 4px 0;
+      font-size: 16px;
+      color: #333;
+    }
+    .popup-card-content p {
+      margin: 4px 0;
+      font-size: 12px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <script>
+    const map = L.map("map").setView([37.2455, 127.0809], 15.5);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: "© OpenStreetMap contributors",
+    }).addTo(map);
+
+    // === 도로 데이터 ===
+    const engineeringRoad = L.polyline([
+      [37.24744928621014, 127.07841734170458 ],//공대
+	[37.247023514977876,127.07845916693653],
+	[37.24547140872474,127.0785449066531],
+	[37.24552004230549,127.07992563271284],
+	[37.24588492710917,127.07998237243892],
+	[37.24607825426014,127.08056866377224],
+	[37.24635306884318,127.08057459181238],
+	[37.24659640053806,127.0805015895062],
+	[37.24675446500199,127.07993820740015],
+	[37.24703832805987,127.07988778753116],
+	[37.247060892163375,127.07983145609785],
+	[37.24702126050105,127.07846198236037]
+    ], { color: "red", weight: 5, opacity: 0.8 });
+
+
+    const peRoad = L.polyline([
+	[37.247248789953005,127.07843826722025],//
+	[37.24546916078659,127.07853786006163],
+	[37.24532498998307,127.078543345847],
+	[37.24521686094346,127.07854886901869],
+	[37.24489247007228,127.07857107380067],
+	[37.24480233198483,127.07862169843803],
+	[37.24473470874797,127.07868925241509],
+	[37.244594851797466,127.07898214477257],
+	[37.24473470874797,127.07868925241509],
+	[37.2446332006517,127.07890047229672],
+	[37.24451145067267,127.07906377010181],
+	[37.244401038873015,127.0791143727058],
+	[37.243840074727544,127.07920958618395],
+	[37.2438307675567,127.07965194629782],
+	[37.24386897469027,127.07978159812166],
+	[37.2439522738143,127.07985212710062],
+	[37.24462135618004,127.07976830286894],
+	[37.244718288618486,127.0796641510417],
+	[37.24469586477552,127.0795119730109],
+	[37.244509201824386,127.07905813241727]
+    ], { color: "red", weight: 5, opacity: 0.8 });
+
+    const libraryRoad = L.polyline([
+      [37.247248789953005,127.07843826722025],//도서관
+	[37.24546916078659,127.07853786006163],
+	[37.24532498998307,127.078543345847],
+	[37.24521686094346,127.07854886901869],
+	[37.24489247007228,127.07857107380067],
+	[37.24480233198483,127.07862169843803],
+	[37.24473470874797,127.07868925241509],
+	[37.244594851797466,127.07898214477257],
+	[37.24452272313177,127.07904969353683],
+	[37.24440103699051,127.07911719036744],
+	[37.243842321684056,127.07921804146395],
+	[37.243729672282555,127.07924609994475],
+	[37.24364852923831,127.07931927351159],
+	[37.2436168641912,127.07951083946755],
+	[37.24360776664984,127.07964044107803],
+	[37.24362972508455,127.08048011938003],
+	[37.24357106904101,127.0806096681135],
+	[37.2435124589425,127.08067159356287],
+	[37.24253033581597,127.0806480060374],
+	[37.24250704067593,127.08176938325934],
+	[37.24245740145371,127.08188766846422],
+	[37.24238077368678,127.08194393732957],
+	[37.24140299190663,127.08215701273852],
+	[37.24137594492579,127.08217952378943],
+	[37.2414454827908,127.0793056946494],
+	[37.241323962372604,127.07912524418893],
+	[37.2406031679128,127.07906250523807],
+	[37.240427370021166,127.07920319740585],
+	[37.24031913144617,127.07937213485233],
+	[37.24028749658483,127.07951861222654],
+	[37.24025553072756,127.08015533574597],
+	[37.240318531353864,127.08026246789974],
+	[37.24027220025517,127.08212761031747],
+	[37.241398482773555,127.08216264294789]
+    ], { color: "#7CFF59", weight: 6, opacity: 0.8 });
+
+    const designRoad = L.polyline([
+	[37.247248789953005,127.07843826722025],//예디대
+	[37.24546916078659,127.07853786006163],
+	[37.24532498998307,127.078543345847],
+	[37.24521686094346,127.07854886901869],
+	[37.24489247007228,127.07857107380067],
+	[37.24480233198483,127.07862169843803],
+	[37.24473470874797,127.07868925241509],
+	[37.244594851797466,127.07898214477257],
+	[37.24452272313177,127.07904969353683],
+	[37.24440103699051,127.07911719036744],
+	[37.243842321684056,127.07921804146395],
+	[37.243729672282555,127.07924609994475],
+	[37.24364852923831,127.07931927351159],
+	[37.2436168641912,127.07951083946755],
+	[37.24360776664984,127.07964044107803],
+	[37.24362972508455,127.08048011938003],
+	[37.24357106904101,127.0806096681135],
+	[37.2435124589425,127.08067159356287],
+	[37.24253033581597,127.0806480060374],
+	[37.24250704067593,127.08176938325934],
+	[37.24245740145371,127.08188766846422],
+	[37.24238077368678,127.08194393732957],
+	[37.24140299190663,127.08215701273852],
+	[37.24137594492579,127.08217952378943],
+	[37.24132475356484,127.08450112860575]
+    ], { color: "#7CFF59", weight: 6, opacity: 0.8 });
+
+    const itnRoad = L.polyline([
+	[37.247248789953005,127.07843826722025],//
+	[37.24546916078659,127.07853786006163],
+	[37.24532498998307,127.078543345847],
+	[37.24521686094346,127.07854886901869],
+	[37.24489247007228,127.07857107380067],
+	[37.24480233198483,127.07862169843803],
+	[37.24473470874797,127.07868925241509],
+	[37.244594851797466,127.07898214477257],
+	[37.24473470874797,127.07868925241509],
+	[37.2446332006517,127.07890047229672],
+	[37.24451145067267,127.07906377010181],
+	[37.244401038873015,127.0791143727058],
+	[37.24373193432062,127.07923201411963],//차단기앞
+	[37.243637264295806,127.0793220793412],
+	[37.243587445755644,127.07971086052873],
+	[37.243650000498164,127.08047732330382],	
+	[37.243595857351075,127.0805956063459],	
+	[37.24350570302894,127.0806687687318],
+	[37.24315880476225,127.08066276377059],//선승관과 생대 사이
+	[37.24251907084014,127.08065081162808],
+	[37.242489010056616,127.08178345174251],	
+	[37.2424483851629,127.08189611148231],
+	[37.24234923322802,127.08194953835766],
+	[37.241371447522894,127.0821682487035],//도서관차단기앞
+	[37.24026543655641,127.08213605550793],
+	[37.239907409788835,127.0819356247891],
+	[37.23964615352127,127.08186772232624],
+	[37.23956738410809,127.08176339024223],
+	[37.23954499787091,127.0815605073001]
+    ], { color: "red", weight: 5, opacity:0.8});
+
+
+
+    const allRoads = [engineeringRoad, peRoad, libraryRoad];
+
+    // === 단과대 + 팝업 내용 ===
+    const locations = [
+      {
+        name: "공과대학",
+        coords: [37.24615691029263, 127.08084065835392],
+        desc: "기계, 전자, 컴퓨터공학 등이 위치합니다.",
+        img1: "https://postfiles.pstatic.net/MjAyNTExMTFfMjA5/MDAxNzYyODYxODUzNjA0.PNG/toilet.png?type=w966",
+        img2: "https://postfiles.pstatic.net/MjAyNTExMTFfMTQy/MDAxNzYyODYyMzQxNjY0.N8WR8e9U99YzUqwhwWzA0sT2x_jA7cvn9LTPJgRSJvUg.BU6-uwk4rWgP69HZc9Asq9pXSnvAjQ7Yjo2qXvKMuqcg.PNG/road.png?type=w966",
+        road: engineeringRoad
+      },
+      {
+        name: "체육대학",
+        coords: [37.244368520122684, 127.08057107017227],
+        desc: "스포츠 관련 학과들이 위치합니다.",
+        img1: "https://postfiles.pstatic.net/MjAyNTExMTFfMjA5/MDAxNzYyODYxODUzNjA0.PNG/toilet.png?type=w966",
+        img2: "https://postfiles.pstatic.net/MjAyNTExMTFfMTQy/MDAxNzYyODYyMzQxNjY0.N8WR8e9U99YzUqwhwWzA0sT2x_jA7cvn9LTPJgRSJvUg.BU6-uwk4rWgP69HZc9Asq9pXSnvAjQ7Yjo2qXvKMuqcg.PNG/road.png?type=w966",
+        road: peRoad
+      },
+      {
+        name: "중앙도서관",
+        coords: [37.24088203083561, 127.07975027446633],
+        desc: "학생들이 공부하고 자료를 찾는 공간입니다.",
+        img1: "https://postfiles.pstatic.net/MjAyNTExMTFfMjA5/MDAxNzYyODYxODUzNjA0.PNG/toilet.png?type=w966",
+        img2: "https://postfiles.pstatic.net/MjAyNTExMTFfMTQy/MDAxNzYyODYyMzQxNjY0.N8WR8e9U99YzUqwhwWzA0sT2x_jA7cvn9LTPJgRSJvUg.BU6-uwk4rWgP69HZc9Asq9pXSnvAjQ7Yjo2qXvKMuqcg.PNG/road.png?type=w966",
+        road: libraryRoad
+      },
+      {
+	name: "예디대",
+	coords: [37.24186089520857, 127.08447355145206],
+	desc: "학생들이 공부하고 자료를 찾는 공간입니다.",
+        img1: "https://postfiles.pstatic.net/MjAyNTExMTFfMjA5/MDAxNzYyODYxODUzNjA0.PNG/toilet.png?type=w966",
+        img2: "https://postfiles.pstatic.net/MjAyNTExMTFfMTQy/MDAxNzYyODYyMzQxNjY0.N8WR8e9U99YzUqwhwWzA0sT2x_jA7cvn9LTPJgRSJvUg.BU6-uwk4rWgP69HZc9Asq9pXSnvAjQ7Yjo2qXvKMuqcg.PNG/road.png?type=w966",
+        road: designRoad
+      },
+
+      {
+	name: "국제대학",
+	coords: [37.23990782929709, 127.0813270460393],
+	desc: "학생들이 공부하고 자료를 찾는 공간입니다.",
+        img1: "https://postfiles.pstatic.net/MjAyNTExMTFfMjA5/MDAxNzYyODYxODUzNjA0.PNG/toilet.png?type=w966",
+        img2: "https://postfiles.pstatic.net/MjAyNTExMTFfMTQy/MDAxNzYyODYyMzQxNjY0.N8WR8e9U99YzUqwhwWzA0sT2x_jA7cvn9LTPJgRSJvUg.BU6-uwk4rWgP69HZc9Asq9pXSnvAjQ7Yjo2qXvKMuqcg.PNG/road.png?type=w966",
+        road: itnRoad
+      }
+
+
+
+    ];
+      
+	
+	
+
+    let currentRoad = null;
+
+    // === 마커 + 팝업 추가 ===
+    locations.forEach((loc) => {
+     const popupHTML = `
+       <div class="popup-container">
+         <div class="popup-card">
+           <img src="https://postfiles.pstatic.net/MjAyNTExMTFfMjA5/MDAxNzYyODYxODUzNjA0.k3_3gdydilC_1xt8V5qncEtBgORwiUeZKvdLSP9sjvwg.DBW1P5zXbzTDcK0so0cdJjJLKKRf4sTa7Nlu4Ll5Tngg.PNG/toilet.png?type=w966" alt="화장실">
+           <div class="popup-card-content">
+             <h4>화장실</h4>
+             <p>${loc.name} 근처 화장실은 1층과 지하에 위치해 있어요.</p>
+             <p><a href="${loc.link}" target="_blank" class="popup-link">위치 보기</a></p>
+           </div>
+         </div>
+
+         <div class="popup-card">
+           <img src="https://postfiles.pstatic.net/MjAyNTExMTFfNzgg/MDAxNzYyODYxMjc2NTEz.9GZPqo0QpzyBn4mLpuRVsF7tPcq7qv2uz6N68YHQujgg.M1VYAvnlfV62YSOzxg3WgzUD0KvqTkgn-wGTkDLhcb4g.PNG/lift-sign.png?type=w966" alt="엘리베이터">
+           <div class="popup-card-content">
+             <h4>엘리베이터</h4>
+             <p>${loc.name} 건물 내부에 엘리베이터가 설치되어 있으며 장애인 이용이 가능합니다.</p>
+             <p><a href="${loc.link}" target="_blank" class="popup-link">위치 보기</a></p>
+           </div>
+         </div>
+       </div>
+  `   ;
+
+
+      const marker = L.marker(loc.coords)
+        .addTo(map)
+        .bindPopup(popupHTML, { 
+		maxWidth: 180,
+		offset : L.point(160,0)
+	 });
+
+      marker.on("click", () => {
+        if (currentRoad) map.removeLayer(currentRoad);
+        if (loc.road) {
+          loc.road.addTo(map);
+          currentRoad = loc.road;
+        }
+      });
+    });
+  </script>
+</body>
+</html>
